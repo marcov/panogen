@@ -5,11 +5,14 @@ import time
 import subprocess
 import configparser
 import sys
+import shutil
+import os
 
 # PYCURL_VERSION = int(pycurl.version_info()[1].split(".")[1])
 
 
 class Cfg:
+
     def __init__(self, configFile):
         config = configparser.ConfigParser()
         try:
@@ -56,7 +59,16 @@ class Cfg:
             sys.exit(-1)
 
         self.defaultPresetNumber = 0
+        self.outDir = "./out"
 
+        # Initial clean up
+        print("Removing old output directory")
+        try:
+            shutil.rmtree(self.outDir)
+        except FileNotFoundError:
+            print("Output directory not found...")
+        
+        os.makedirs(self.outDir)
 
 class CameraCtrl:
     def __init__(self, cfg):
@@ -145,8 +157,8 @@ class CameraCtrl:
             self.stepDown(self.cfg.maxVerticalSteps)
 
     def cvResetPosition(self):
-        ref1 = "ref1.jpg"
-        ref2 = "ref2.jpg"
+        ref1 = self.cfg.outDir + "/ref1.jpg"
+        ref2 = self.cfg.outDir + "/ref2.jpg"
 
         if self.cfg.calibrateHorizontal:
             print("cv horizontal reset position...")
@@ -208,7 +220,7 @@ class CameraCtrl:
         ctr = self.cfg.horizontalStartSteps
 
         for i in range(self.cfg.numOfPanoramaShots):
-            dst = "pic_" + str(i) + ".jpg"
+            dst = self.cfg.outDir + "/" + "pic_" + str(i) + ".jpg"
             print("Getting panorama shot # " + str(i))
             self.takePicture(self.cfg.fullSizePic, dst)
             generatedImages.append(dst)
@@ -228,7 +240,7 @@ class CameraCtrl:
 
     def stitch(self, imagesList):
         print("Running stitcher on " + str(len(imagesList)) + " images...")
-        args = [self.cfg.stitcherExec] + imagesList
+        args = [self.cfg.stitcherExec] + imagesList + [ "--output " + self.cfg.outDir +"panorama.jpg" ]
         ret = subprocess.call(args)
         print("Stitcher exited with code: " + str(ret))
 

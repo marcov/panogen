@@ -12,12 +12,14 @@ EXECUTABLES := MatchTemplate_Demo-$(OPENCV_VER) stitching-$(OPENCV_VER) compareH
 
 EXECUTABLES := $(foreach exec,$(EXECUTABLES), $(addprefix $(BUILD_DIR)/, $(exec)))
 
+
 .PHONY: all
 all: $(EXECUTABLES)
 
-
 $(BUILD_DIR):
 	mkdir -p $@
+	ln -s ./compareHist_Demo  $(BUILD_DIR)/comparator
+	ln -s ./stitching-$(OPENCV_VER) $(BUILD_DIR)/stitcher
 
 $(BUILD_DIR)/% : $(SRCS_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)

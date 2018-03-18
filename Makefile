@@ -6,9 +6,9 @@ OPENCV_VER := 320
 BUILD_DIR := build
 #CXXFLAGS=-Wl,--copy-dt-needed-entries -Wl,--no-as-needed
 
-LDFLAGS := -lopencv_stitching -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -lopencv_highgui -opencv_features2d
+LDFLAGS := -lopencv_stitching -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -lopencv_highgui -lopencv_features2d
 
-EXECUTABLES := MatchTemplate_Demo-$(OPENCV_VER) stitching-$(OPENCV_VER) compareHist_Demo kaze
+EXECUTABLES := MatchTemplate_Demo-$(OPENCV_VER) stitching-$(OPENCV_VER) compareHist_Demo #kaze
 
 EXECUTABLES := $(foreach exec,$(EXECUTABLES), $(addprefix $(BUILD_DIR)/, $(exec)))
 

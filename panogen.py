@@ -263,7 +263,7 @@ def main():
 
     stitchOnly = (len(sys.argv) > 1 and sys.argv[1] == '-s')
 
-    p = CameraCtrl(Cfg("panorama.cfg"), cleanUp=(not stitchOnly))
+    p = CameraCtrl(Cfg("panogen.cfg"), cleanUp=(not stitchOnly))
 
     if stitchOnly:
         imgList = [

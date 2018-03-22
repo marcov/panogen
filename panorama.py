@@ -61,19 +61,21 @@ class Cfg:
         self.defaultPresetNumber = 0
         self.outDir = "./out"
 
-        # Initial clean up
-        print("Removing old output directory")
-        try:
-            shutil.rmtree(self.outDir)
-        except FileNotFoundError:
-            print("Output directory not found...")
-        
-        os.makedirs(self.outDir)
 
 class CameraCtrl:
-    def __init__(self, cfg):
+    def __init__(self, cfg, cleanUp=True):
         self.c = pycurl.Curl()
         self.cfg = cfg
+
+        if cleanUp:
+            # Initial clean up
+            print("Removing old output directory")
+            try:
+                shutil.rmtree(self.cfg.outDir)
+            except FileNotFoundError:
+                print("Output directory not found...")
+
+            os.makedirs(self.cfg.outDir)
 
     def getPath(self, path, dst=None):
         # print("Getting path: " + path)
@@ -240,7 +242,7 @@ class CameraCtrl:
 
     def stitch(self, imagesList):
         print("Running stitcher on " + str(len(imagesList)) + " images...")
-        args = [self.cfg.stitcherExec] + imagesList + [ "--output " + self.cfg.outDir +"panorama.jpg" ]
+        args = [self.cfg.stitcherExec] + [ "--output",  self.cfg.outDir +"/panorama.jpg" ] + imagesList
         ret = subprocess.call(args)
         print("Stitcher exited with code: " + str(ret))
 
@@ -258,10 +260,27 @@ class CameraCtrl:
 
 
 def main():
-    p = CameraCtrl(Cfg("panorama.cfg"))
-    imgList = p.getPanoramaPictures()
+
+    stitchOnly = (len(sys.argv) > 1 and sys.argv[1] == '-s')
+
+    p = CameraCtrl(Cfg("panorama.cfg"), cleanUp=(not stitchOnly))
+
+    if stitchOnly:
+        imgList = [
+            'out/pic_0.jpg',
+            'out/pic_1.jpg',
+            'out/pic_2.jpg',
+            'out/pic_3.jpg',
+            'out/pic_4.jpg',
+            'out/pic_5.jpg',
+            'out/pic_6.jpg'
+            ]
+    else:
+        imgList = p.getPanoramaPictures()
+
     p.stitch(imgList)
 
 
 if __name__ == '__main__':
     main()
+

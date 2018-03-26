@@ -243,7 +243,7 @@ class CameraCtrl:
     def stitch(self, imagesList):
         print("Running stitcher on " + str(len(imagesList)) + " images...")
         args = [self.cfg.stitcherExec,
-                "--output",  self.cfg.outDir + "/panorama.jpg" ] +
+                "--output",  self.cfg.outDir + "/panorama.jpg" ] + \
                 imagesList
         ret = subprocess.call(args)
         print("Stitcher exited with code: " + str(ret))
